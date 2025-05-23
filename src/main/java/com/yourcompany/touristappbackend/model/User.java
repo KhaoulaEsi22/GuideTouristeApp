@@ -18,8 +18,8 @@ import java.util.UUID;
 @AllArgsConstructor // Génère un constructeur avec tous les arguments (Lombok)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) // Génère un UUID comme ID
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Génère un UUID comme ID
+    private Long id;
 
     @Column(unique = true, nullable = false) // L'email doit être unique et non nul
     private String email;
