@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,7 +13,8 @@ import java.util.UUID;
 @Table(name = "users") // Nom de la table dans la BDD
 @Inheritance(strategy = InheritanceType.JOINED) // Stratégie d'héritage JOINED
 @Data // Génère getters, setters, toString, equals, hashCode (Lombok)
-@NoArgsConstructor // Génère un constructeur sans arguments (Lombok)
+@NoArgsConstructor// Génère un constructeur sans arguments (Lombok)
+@SuperBuilder
 @AllArgsConstructor // Génère un constructeur avec tous les arguments (Lombok)
 public class User {
     @Id
