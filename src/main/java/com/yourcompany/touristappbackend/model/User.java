@@ -19,7 +19,7 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Génère un UUID comme ID
-    private Long id;
+    private UUID id;
 
     @Column(unique = true, nullable = false) // L'email doit être unique et non nul
     private String email;

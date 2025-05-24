@@ -1,9 +1,8 @@
 package com.yourcompany.touristappbackend.model;
 
 
-import com.yourcompany.touristappbackend.Touriste;
-import com.yourcompany.touristappbackend.model.Guide;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import lombok.AllArgsConstructor;
 @Entity
 @Table(name = "evaluations")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Evaluation {

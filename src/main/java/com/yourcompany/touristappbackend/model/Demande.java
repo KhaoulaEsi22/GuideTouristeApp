@@ -1,84 +1,75 @@
 package com.yourcompany.touristappbackend.model;
 
-
-import com.yourcompany.touristappbackend.Touriste;
-import com.yourcompany.touristappbackend.model.Guide;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.time.LocalDateTime; // Pour la date et l'heure de la demande
+import lombok.Builder; // Ajoutez cette ligne si vous utilisez @Builder dans d'autres classes
+import java.time.LocalDateTime;
+import java.util.UUID;
+import java.util.Date; // Assurez-vous d'avoir Date ou LocalDate/LocalTime si vous les utilisez pour d'autres champs
+
+// Importations manquantes pour la version précédemment corrigée de Demande
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode; // Si vous utilisez @EqualsAndHashCode sur cette classe
 
 @Entity
 @Table(name = "demandes")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// Si vous aviez @Builder ici avant, rajoutez-le
+// @Builder
+// Si vous aviez @EqualsAndHashCode ici avant, rajoutez-le
+// @EqualsAndHashCode
 public class Demande {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // Attention : @GeneratedValue(strategy = GenerationType.IDENTITY) est généralement pour les IDs numériques (Long, Integer) générés par la base de données.
+    // Pour les UUID, vous utiliserez souvent @GeneratedValue(strategy = GenerationType.UUID) si votre JPA supporte ça,
+    // ou Lombok's @Builder.Default avec UUID.randomUUID() si vous le générez côté application.
+    // Ou si l'ID est généré par la DB (PostgreSQL par exemple), vous pourriez utiliser une stratégie personnalisée ou simplement ne pas le générer ici si la DB le gère.
+    // Pour l'instant, je vais le laisser tel quel, mais gardez ça en tête.
+    private UUID id;
 
     private String description;
+
+    // Attention : Date ou LocalDateTime ? Assurez-vous d'utiliser le même type que dans vos autres classes/services.
+    // Si c'est un LocalDateTime, assurez-vous de la bonne persistance JPA (par ex. @Column(columnDefinition = "TIMESTAMP")).
     private LocalDateTime dateDemande;
-    private String statut; // Ex: "PENDING", "ACCEPTED", "REJECTED", "COMPLETED"
 
-    @ManyToOne(fetch = FetchType.LAZY) // Une demande est faite par un seul touriste
-    @JoinColumn(name = "touriste_id", nullable = false) // Clé étrangère vers la table des touristes
-    private Touriste touriste; // Le touriste qui fait la demande
+    // C'est LA MODIFICATION CRUCIALE : Changez String en StatutDemande
+    @Enumerated(EnumType.STRING) // Ceci indique à JPA de stocker le nom de l'énumération ("EN_ATTENTE", "ACCEPTEE", etc.) en tant que String dans la base de données.
+    // Mais en Java, le type reste l'énumération.
+    private StatutDemande statut; // Le type doit être votre énumération StatutDemande
 
-    @ManyToOne(fetch = FetchType.LAZY) // Une demande est adressée à un seul guide
-    @JoinColumn(name = "guide_id") // Clé étrangère vers la table des guides (nullable si le guide n'est pas encore attribué)
-    private Guide guide; // Le guide auquel la demande est adressée (peut être null initialement)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "touriste_id", nullable = false)
+    private Touriste touriste;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guide_id")
+    private Guide guide;
 
-    public String getDescription() {
-        return description;
-    }
+    // Les getters et setters générés par Lombok via @Data sont suffisants.
+    // Vous n'avez pas besoin de les écrire explicitement si vous utilisez @Data.
+    // Je les laisse commentés pour montrer, mais retirez-les pour ne pas dupliquer Lombok.
+    /*
+    public UUID getId() { return id; }
+    public String getDescription() { return description; }
+    public LocalDateTime getDateDemande() { return dateDemande; }
+    public StatutDemande getStatut() { return statut; } // Changé de String à StatutDemande
+    public Touriste getTouriste() { return touriste; }
+    public Guide getGuide() { return guide; }
 
-    public LocalDateTime getDateDemande() {
-        return dateDemande;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public Touriste getTouriste() {
-        return touriste;
-    }
-
-    public Guide getGuide() {
-        return guide;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setDateDemande(LocalDateTime dateDemande) {
-        this.dateDemande = dateDemande;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public void setTouriste(Touriste touriste) {
-        this.touriste = touriste;
-    }
-
-    public void setGuide(Guide guide) {
-        this.guide = guide;
-    }
-
-
+    public void setId(UUID id) { this.id = id; }
+    public void setDescription(String description) { this.description = description; }
+    public void setDateDemande(LocalDateTime dateDemande) { this.dateDemande = dateDemande; }
+    public void setStatut(StatutDemande statut) { this.statut = statut; } // Changé de String à StatutDemande
+    public void setTouriste(Touriste touriste) { this.touriste = touriste; }
+    public void setGuide(Guide guide) { this.guide = guide; }
+    */
 }
