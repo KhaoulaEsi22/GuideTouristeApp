@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.List;
 
 @Repository
-public interface PaiementRepository extends JpaRepository<Paiement, UUID> {
-    List<Paiement> findByDemandeId(UUID demandeId);
+public interface PaiementRepository extends JpaRepository<Paiement, Long> {
+    List<Paiement> findByDemandeId(Long demandeId);
     // Ajoutez d'autres méthodes de recherche si nécessaire
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GuideDto {
-    private UUID id;
+    private Long id;
     private String nom;
     private String prenom;
     private String email;

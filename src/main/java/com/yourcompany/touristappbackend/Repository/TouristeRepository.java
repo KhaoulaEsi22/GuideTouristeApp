@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface TouristeRepository extends JpaRepository<Touriste, UUID> {
+public interface TouristeRepository extends JpaRepository<Touriste, Long> {
     Optional<Touriste> findByEmail(String email);
     // Ajoutez d'autres méthodes de recherche si nécessaire
 }

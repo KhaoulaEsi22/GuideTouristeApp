@@ -32,7 +32,7 @@ public class UserService {
      * @param id L'UUID de l'utilisateur.
      * @return Un Optional contenant l'utilisateur s'il existe.
      */
-    public Optional<User> getUserById(UUID id) {
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -67,7 +67,7 @@ public class UserService {
      * @throws ResourceNotFoundException si l'utilisateur n'est pas trouvé.
      */
     @Transactional
-    public User updateUser(UUID id, User userDetails) {
+    public User updateUser(Long id, User userDetails) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
 
@@ -88,7 +88,7 @@ public class UserService {
      * @throws ResourceNotFoundException si l'utilisateur n'est pas trouvé.
      */
     @Transactional
-    public void deactivateUser(UUID id) {
+    public void deactivateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
         user.setEstActif(false); // Marquer l'utilisateur comme inactif
@@ -101,7 +101,7 @@ public class UserService {
      * @throws ResourceNotFoundException si l'utilisateur n'est pas trouvé.
      */
     @Transactional
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id " + id);
         }

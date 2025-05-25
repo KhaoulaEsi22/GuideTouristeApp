@@ -30,7 +30,6 @@ public class GuideController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(guideDtos, HttpStatus.OK);
     }
-
     // Méthode de conversion (peut être placée dans une classe utilitaire Mapper si beaucoup de DTOs)
     private GuideDto convertToDto(Guide guide) {
         GuideDto dto = new GuideDto();

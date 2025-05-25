@@ -10,20 +10,19 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-import java.util.UUID;
 
+@Builder
 @Entity
 @Table(name = "paiements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @EqualsAndHashCode
 public class Paiement {
     @Id
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
-    @Builder.Default
-    private UUID id = UUID.randomUUID();
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
     @NotNull(message = "Le montant est obligatoire")
     @Min(value = 0, message = "Le montant ne peut pas être négatif")
@@ -36,21 +35,16 @@ public class Paiement {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "La méthode de paiement est obligatoire")
-    private MethodePaiement methodePaiement;
+    private Admin.MethodePaiement methodePaiement;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Le statut du paiement est obligatoire")
-    private StatutPaiement statut = StatutPaiement.EN_ATTENTE; // Statut par défaut
+    private StatutDemande.StatutPaiement statut = StatutDemande.StatutPaiement.EN_ATTENTE;
 
-    private String transactionId; // ID de transaction de la passerelle de paiement
+    private String transactionId;
 
-    // Relation ManyToOne avec Demande (un paiement est lié à une demande)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demande_id", nullable = false) // Clé étrangère vers l'ID de la demande
+    @JoinColumn(name = "demande_id", nullable = false)
     @NotNull(message = "La demande associée au paiement est obligatoire")
     private Demande demande;
-
-    // Méthodes métier (non persistées ici, gérées par le service)
-    // traiterPaiement(): Boolean
-    // annulerPaiement(): Boolean
 }

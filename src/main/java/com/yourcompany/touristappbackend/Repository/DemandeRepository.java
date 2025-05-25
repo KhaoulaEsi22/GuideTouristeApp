@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface DemandeRepository extends JpaRepository<Demande, UUID> {
-    List<Demande> findByTouristeId(UUID touristeId);
-    List<Demande> findByGuideId(UUID guideId);
+public interface DemandeRepository extends JpaRepository<Demande, Long> {
+    List<Demande> findByTouristeId(Long touristeId);
+    List<Demande> findByGuideId(Long guideId);
     List<Demande> findByStatut(StatutDemande statut);
     boolean existsByTouristeAndGuideAndStatut(Touriste touriste, Guide guide, StatutDemande statut);
     // Ajoutez d'autres méthodes de recherche si nécessaire

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Génère un UUID comme ID
-    private UUID id;
+    private Long id;
 
     @Column(unique = true, nullable = false) // L'email doit être unique et non nul
     private String email;
@@ -33,7 +33,10 @@ public class User {
 
     @Temporal(TemporalType.TIMESTAMP) //  date/heure
     private Date dateCreation;
-
+    @PrePersist
+    protected void onCreate() {
+        dateCreation = new Date();
+    }
     private Boolean estActif = true;
 
     @Enumerated(EnumType.STRING) // Stocke l'enum  dans la BDD

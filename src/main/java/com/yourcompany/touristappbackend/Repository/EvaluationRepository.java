@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface EvaluationRepository extends JpaRepository<Evaluation, UUID> {
-    List<Evaluation> findByGuideId(UUID guideId);
-    List<Evaluation> findByTouristeId(UUID touristeId);
+public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
+    List<Evaluation> findByGuideId(Long guideId);
+    List<Evaluation> findByTouristeId(Long touristeId);
     // Ajoutez d'autres méthodes de recherche si nécessaire
 }

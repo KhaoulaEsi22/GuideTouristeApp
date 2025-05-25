@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface GuideRepository extends JpaRepository<Guide, UUID> {
+public interface GuideRepository extends JpaRepository<Guide, Long> {
     Optional<Guide> findByEmail(String email);
     List<Guide> findByRole(Role role); // Pour trouver tous les guides par leur rôle
 }

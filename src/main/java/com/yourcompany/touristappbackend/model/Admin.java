@@ -18,4 +18,10 @@ public class Admin extends User {
     // Les administrateurs peuvent avoir des attributs spécifiques ici si nécessaire,
     // par exemple, des niveaux d'autorisation granulaires ou des logs d'actions.
     private String roleAdminSpecific;
+
+    public enum MethodePaiement {
+        CARTE_CREDIT,
+        PAYPAL,
+        VIREMENT
+    }
 }

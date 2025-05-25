@@ -36,7 +36,7 @@ public class TouristeService {
         return touristeRepository.findAll();
     }
 
-    public Touriste getTouristeById(UUID id) {
+    public Touriste getTouristeById(Long id) {
         return touristeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Touriste", "id", id));
     }
@@ -45,7 +45,7 @@ public class TouristeService {
         return touristeRepository.save(touriste);
     }
 
-    public Touriste updateTouriste(UUID id, Touriste touristeDetails) {
+    public Touriste updateTouriste(Long id, Touriste touristeDetails) {
         Touriste touriste = touristeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Touriste", "id", id));
 
@@ -61,13 +61,13 @@ public class TouristeService {
         return touristeRepository.save(touriste);
     }
 
-    public void deleteTouriste(UUID id) {
+    public void deleteTouriste(Long id) {
         Touriste touriste = touristeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Touriste", "id", id));
         touristeRepository.delete(touriste);
     }
 
-    public boolean annulerDemande(UUID touristeId, UUID demandeId) {
+    public boolean annulerDemande(Long touristeId, Long demandeId) {
         Touriste touriste = getTouristeById(touristeId);
         Demande demande = demandeRepository.findById(demandeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande", "id", demandeId));
@@ -81,7 +81,7 @@ public class TouristeService {
         return false;
     }
 
-    public Paiement effectuerPaiement(UUID touristeId, UUID demandeId, Double montant, MethodePaiement methodePaiement) {
+    public Paiement effectuerPaiement(Long touristeId, Long demandeId, Double montant, Admin.MethodePaiement methodePaiement) {
         Touriste touriste = getTouristeById(touristeId);
         Demande demande = demandeRepository.findById(demandeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande", "id", demandeId));
@@ -105,7 +105,7 @@ public class TouristeService {
         return paiementRepository.save(paiement);
     }
 
-    public Evaluation evaluerGuide(UUID touristeId, UUID guideId, int note, String commentaire) {
+    public Evaluation evaluerGuide(Long touristeId, Long guideId, int note, String commentaire) {
         Touriste touriste = getTouristeById(touristeId);
         Guide guide = guideRepository.findById(guideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Guide", "id", guideId));
@@ -120,7 +120,7 @@ public class TouristeService {
         return evaluationRepository.save(evaluation);
     }
 
-    public boolean confirmerVisite(UUID touristeId, UUID demandeId) {
+    public boolean confirmerVisite(Long touristeId, Long demandeId) {
         Touriste touriste = getTouristeById(touristeId);
         Demande demande = demandeRepository.findById(demandeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Demande", "id", demandeId));

@@ -21,7 +21,7 @@ public class GuideService {
         return guideRepository.findByRole(Role.ROLE_GUIDE);
     }
 
-    public Optional<Guide> getGuideById(UUID id) {
+    public Optional<Guide> getGuideById(Long id) {
         return guideRepository.findById(id);
     }
 

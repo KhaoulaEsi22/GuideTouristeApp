@@ -29,11 +29,7 @@ public class Demande {
 
     @Id
     // Attention : @GeneratedValue(strategy = GenerationType.IDENTITY) est généralement pour les IDs numériques (Long, Integer) générés par la base de données.
-    // Pour les UUID, vous utiliserez souvent @GeneratedValue(strategy = GenerationType.UUID) si votre JPA supporte ça,
-    // ou Lombok's @Builder.Default avec UUID.randomUUID() si vous le générez côté application.
-    // Ou si l'ID est généré par la DB (PostgreSQL par exemple), vous pourriez utiliser une stratégie personnalisée ou simplement ne pas le générer ici si la DB le gère.
-    // Pour l'instant, je vais le laisser tel quel, mais gardez ça en tête.
-    private UUID id;
+    private Long id;
 
     private String description;
 

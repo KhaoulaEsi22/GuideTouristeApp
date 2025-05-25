@@ -1,10 +1,7 @@
 // src/main/java/com/yourcompany/touristappbackend/controller/TouristeController.java
 package com.yourcompany.touristappbackend.Controller;
 
-import com.yourcompany.touristappbackend.model.Touriste;
-import com.yourcompany.touristappbackend.model.Evaluation;
-import com.yourcompany.touristappbackend.model.Paiement;
-import com.yourcompany.touristappbackend.model.MethodePaiement; // Assurez-vous d'avoir cet Enum
+import com.yourcompany.touristappbackend.model.*;
 import com.yourcompany.touristappbackend.Service.TouristeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -32,7 +29,7 @@ public class TouristeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Touriste> getTouristeById(@PathVariable UUID id) {
+    public ResponseEntity<Touriste> getTouristeById(@PathVariable Long id) {
         Touriste touriste = touristeService.getTouristeById(id);
         return new ResponseEntity<>(touriste, HttpStatus.OK);
     }
@@ -44,13 +41,13 @@ public class TouristeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Touriste> updateTouriste(@PathVariable UUID id, @Valid @RequestBody Touriste touristeDetails) {
+    public ResponseEntity<Touriste> updateTouriste(@PathVariable Long id, @Valid @RequestBody Touriste touristeDetails) {
         Touriste updatedTouriste = touristeService.updateTouriste(id, touristeDetails);
         return new ResponseEntity<>(updatedTouriste, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTouriste(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteTouriste(@PathVariable Long id) {
         touristeService.deleteTouriste(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -59,8 +56,8 @@ public class TouristeController {
 
     @PatchMapping("/{touristeId}/demandes/{demandeId}/annuler")
     public ResponseEntity<Boolean> annulerDemande(
-            @PathVariable UUID touristeId,
-            @PathVariable UUID demandeId) {
+            @PathVariable Long touristeId,
+            @PathVariable Long demandeId) {
         boolean success = touristeService.annulerDemande(touristeId, demandeId);
         return new ResponseEntity<>(success, HttpStatus.OK);
     }
@@ -69,22 +66,24 @@ public class TouristeController {
     // ou utiliser un Map simple pour les données du corps de la requête.
     @PostMapping("/{touristeId}/paiements")
     public ResponseEntity<Paiement> effectuerPaiement(
-            @PathVariable UUID touristeId,
-            @RequestBody Map<String, Object> paiementDetails) { // Utilisez un DTO pour plus de robustesse
-        UUID demandeId = UUID.fromString((String) paiementDetails.get("demandeId"));
-        Double montant = (Double) paiementDetails.get("montant");
-        MethodePaiement methode = MethodePaiement.valueOf((String) paiementDetails.get("methodePaiement"));
+            @PathVariable Long touristeId,
+            @RequestBody Map<String, Object> paiementDetails) { // Consider using a DTO
+
+        Long demandeId = Long.parseLong(paiementDetails.get("demandeId").toString());
+        Double montant = Double.parseDouble(paiementDetails.get("montant").toString());
+        Admin.MethodePaiement methode = Admin.MethodePaiement.valueOf(
+                paiementDetails.get("methodePaiement").toString());
 
         Paiement paiement = touristeService.effectuerPaiement(touristeId, demandeId, montant, methode);
         return new ResponseEntity<>(paiement, HttpStatus.CREATED);
     }
 
     // Pour évaluer un guide, également utiliser un DTO ou un Map
-    @PostMapping("/{touristeId}/evaluations")
     public ResponseEntity<Evaluation> evaluerGuide(
-            @PathVariable UUID touristeId,
-            @RequestBody Map<String, Object> evaluationDetails) { // Utilisez un DTO
-        UUID guideId = UUID.fromString((String) evaluationDetails.get("guideId"));
+            @PathVariable Long touristeId,
+            @RequestBody Map<String, Object> evaluationDetails) {
+
+        Long guideId = Long.parseLong(evaluationDetails.get("guideId").toString());
         int note = (Integer) evaluationDetails.get("note");
         String commentaire = (String) evaluationDetails.get("commentaire");
 
@@ -94,8 +93,8 @@ public class TouristeController {
 
     @PatchMapping("/{touristeId}/demandes/{demandeId}/confirmer-visite")
     public ResponseEntity<Boolean> confirmerVisite(
-            @PathVariable UUID touristeId,
-            @PathVariable UUID demandeId) {
+            @PathVariable Long touristeId,
+            @PathVariable Long demandeId) {
         boolean success = touristeService.confirmerVisite(touristeId, demandeId);
         return new ResponseEntity<>(success, HttpStatus.OK);
     }

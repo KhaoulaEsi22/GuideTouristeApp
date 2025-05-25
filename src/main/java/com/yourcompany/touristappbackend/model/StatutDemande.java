@@ -6,5 +6,12 @@ public enum StatutDemande {
     REFUSEE,
     ANNULEE,
     TERMINEE,
-    EN_COURS
+    EN_COURS;
+
+    public enum StatutPaiement {
+        EN_ATTENTE,
+        VALIDE,
+        ECHOUE,
+        REMBOURSE
+    }
 }

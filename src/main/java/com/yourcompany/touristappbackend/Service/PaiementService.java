@@ -2,8 +2,6 @@ package com.yourcompany.touristappbackend.Service;
 
 import com.yourcompany.touristappbackend.exception.ResourceNotFoundException;
 import com.yourcompany.touristappbackend.model.Paiement;
-import com.yourcompany.touristappbackend.model.Demande; // Pour potentiellement mettre à jour la demande
-import com.yourcompany.touristappbackend.model.StatutPaiement;
 import com.yourcompany.touristappbackend.Repository.PaiementRepository; // Correction du package si nécessaire
 import com.yourcompany.touristappbackend.Repository.DemandeRepository; // Correction du package si nécessaire // Injection nécessaire
 import com.yourcompany.touristappbackend.model.StatutDemande; // Ajouté pour l'exemple d'utilisation de demandeRepository
@@ -30,7 +28,7 @@ public class PaiementService {
         return paiementRepository.findAll();
     }
 
-    public Paiement getPaiementById(UUID id) {
+    public Paiement getPaiementById(Long id) {
         // Correction de l'ordre des arguments pour ResourceNotFoundException
         return paiementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", id));
@@ -39,7 +37,7 @@ public class PaiementService {
     public Paiement createPaiement(Paiement paiement) {
         // Logique de traitement du paiement (intégration passerelle, etc.)
         // Mise à jour du statut initial
-        paiement.setStatut(StatutPaiement.EN_ATTENTE); // Ou directement VALIDE si traitement instantané
+        paiement.setStatut(StatutDemande.StatutPaiement.EN_ATTENTE); // Ou directement VALIDE si traitement instantané
         Paiement savedPaiement = paiementRepository.save(paiement);
 
         // Exemple: Si le paiement est réussi, mettre à jour le statut de la demande associée
@@ -55,7 +53,7 @@ public class PaiementService {
         return savedPaiement;
     }
 
-    public Paiement updatePaiement(UUID id, Paiement paiementDetails) {
+    public Paiement updatePaiement(Long id, Paiement paiementDetails) {
         Paiement paiement = getPaiementById(id);
 
         // Mettre à jour les champs autorisés
@@ -68,29 +66,29 @@ public class PaiementService {
         return paiementRepository.save(paiement);
     }
 
-    public void deletePaiement(UUID id) {
+    public void deletePaiement(Long id) {
         Paiement paiement = getPaiementById(id);
         paiementRepository.delete(paiement);
     }
 
     // Méthodes métier spécifiques (selon le diagramme)
-    public Paiement traiterPaiement(UUID paiementId) {
+    public Paiement traiterPaiement(Long paiementId) {
         Paiement paiement = getPaiementById(paiementId);
         // Logique de traitement (simulation d'une interaction avec une passerelle)
         // Si le traitement réussit
-        paiement.setStatut(StatutPaiement.VALIDE);
+        paiement.setStatut(StatutDemande.StatutPaiement.VALIDE);
         // Si échec
         // paiement.setStatut(StatutPaiement.ECHOUE);
         return paiementRepository.save(paiement);
     }
 
-    public Paiement annulerPaiement(UUID paiementId) {
+    public Paiement annulerPaiement(Long paiementId) {
         Paiement paiement = getPaiementById(paiementId);
         // Logique d'annulation (peut impliquer un remboursement)
-        if (paiement.getStatut() == StatutPaiement.VALIDE) {
-            paiement.setStatut(StatutPaiement.REMBOURSE);
-        } else if (paiement.getStatut() == StatutPaiement.EN_ATTENTE) {
-            paiement.setStatut(StatutPaiement.ECHOUE); // Ou annulé sans remboursement
+        if (paiement.getStatut() == StatutDemande.StatutPaiement.VALIDE) {
+            paiement.setStatut(StatutDemande.StatutPaiement.REMBOURSE);
+        } else if (paiement.getStatut() == StatutDemande.StatutPaiement.EN_ATTENTE) {
+            paiement.setStatut(StatutDemande.StatutPaiement.ECHOUE); // Ou annulé sans remboursement
         }
         return paiementRepository.save(paiement);
     }
