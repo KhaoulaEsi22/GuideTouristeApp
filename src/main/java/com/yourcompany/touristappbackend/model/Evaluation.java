@@ -1,7 +1,5 @@
 package com.yourcompany.touristappbackend.model;
 
-
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
