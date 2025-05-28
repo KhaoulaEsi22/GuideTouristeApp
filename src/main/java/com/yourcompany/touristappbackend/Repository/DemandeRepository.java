@@ -16,5 +16,5 @@ public interface DemandeRepository extends JpaRepository<Demande, Long> {
     List<Demande> findByGuideId(Long guideId);
     List<Demande> findByStatut(StatutDemande statut);
     boolean existsByTouristeAndGuideAndStatut(Touriste touriste, Guide guide, StatutDemande statut);
-    // Ajoutez d'autres méthodes de recherche si nécessaire
+
 }

@@ -1,4 +1,4 @@
-package com.yourcompany.touristappbackend.model;
+/*package com.yourcompany.touristappbackend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -67,5 +67,149 @@ public class Demande {
     public void setStatut(StatutDemande statut) { this.statut = statut; } // Changé de String à StatutDemande
     public void setTouriste(Touriste touriste) { this.touriste = touriste; }
     public void setGuide(Guide guide) { this.guide = guide; }
-    */
+
+} */
+package com.yourcompany.touristappbackend.model; // Assurez-vous du bon package
+
+import jakarta.persistence.*; // Utilisez jakarta.persistence si vous êtes sur Spring Boot 3+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "demandes") // Nom de la table dans votre base de données
+public class Demande {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // C'est la clé de la solution !
+    private Long id;
+
+    private String title;
+    private String description;
+    private LocalDateTime date; // Ou LocalDate
+    private String time;
+    private String location;
+    private Integer numberOfPeople;
+    private String language;
+    private String specialRequirements;
+
+    @Enumerated(EnumType.STRING) // Pour stocker l'enum en tant que String dans la BD
+    private StatutDemande statut;
+
+    private LocalDateTime dateDemande; // Date de création de la demande
+
+    @ManyToOne(fetch = FetchType.LAZY) // Relation Many-to-One avec Touriste
+    @JoinColumn(name = "touriste_id", nullable = false) // Colonne de clé étrangère
+    private Touriste touriste;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Relation Many-to-One avec Guide (optionnel, peut être null au début)
+    @JoinColumn(name = "guide_id") // La colonne sera nullable
+    private Guide guide;
+
+    // Constructeurs (vide et/ou avec des champs)
+    public Demande() {
+    }
+
+    // Getters et Setters pour tous les champs
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getDate() { // Ou LocalDate
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) { // Ou LocalDate
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Integer getNumberOfPeople() {
+        return numberOfPeople;
+    }
+
+    public void setNumberOfPeople(Integer numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getSpecialRequirements() {
+        return specialRequirements;
+    }
+
+    public void setSpecialRequirements(String specialRequirements) {
+        this.specialRequirements = specialRequirements;
+    }
+
+    public StatutDemande getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutDemande statut) {
+        this.statut = statut;
+    }
+
+    public LocalDateTime getDateDemande() {
+        return dateDemande;
+    }
+
+    public void setDateDemande(LocalDateTime dateDemande) {
+        this.dateDemande = dateDemande;
+    }
+
+    public Touriste getTouriste() {
+        return touriste;
+    }
+
+    public void setTouriste(Touriste touriste) {
+        this.touriste = touriste;
+    }
+
+    public Guide getGuide() {
+        return guide;
+    }
+
+    public void setGuide(Guide guide) {
+        this.guide = guide;
+    }
 }

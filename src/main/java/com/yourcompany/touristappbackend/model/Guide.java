@@ -6,7 +6,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import java.util.HashSet;
@@ -16,6 +18,8 @@ import java.util.Set;
 @Table(name = "guides")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor // Si vous avez un constructeur avec tous les champs
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 public class Guide extends User {
 
