@@ -1,6 +1,7 @@
 package com.yourcompany.touristappbackend.model;
 
 import jakarta.persistence.*;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class Paiement {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "La méthode de paiement est obligatoire")
-    private Admin.MethodePaiement methodePaiement;
+    private MethodePaiement methodePaiement; // <-- CORRIGÉ : Utilise la nouvelle enum MethodePaiement
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Le statut du paiement est obligatoire")
@@ -48,3 +49,4 @@ public class Paiement {
     @NotNull(message = "La demande associée au paiement est obligatoire")
     private Demande demande;
 }
+

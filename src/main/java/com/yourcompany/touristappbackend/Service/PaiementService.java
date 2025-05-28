@@ -2,14 +2,17 @@ package com.yourcompany.touristappbackend.Service;
 
 import com.yourcompany.touristappbackend.exception.ResourceNotFoundException;
 import com.yourcompany.touristappbackend.model.Paiement;
-import com.yourcompany.touristappbackend.Repository.PaiementRepository; // Correction du package si nécessaire
-import com.yourcompany.touristappbackend.Repository.DemandeRepository; // Correction du package si nécessaire // Injection nécessaire
-import com.yourcompany.touristappbackend.model.StatutDemande; // Ajouté pour l'exemple d'utilisation de demandeRepository
+import com.yourcompany.touristappbackend.model.Demande;
+import com.yourcompany.touristappbackend.model.MethodePaiement;
+import com.yourcompany.touristappbackend.model.StatutDemande;
+import com.yourcompany.touristappbackend.Repository.PaiementRepository;
+import com.yourcompany.touristappbackend.Repository.DemandeRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,78 +20,138 @@ import java.util.UUID;
 public class PaiementService {
 
     private final PaiementRepository paiementRepository;
-    private final DemandeRepository demandeRepository; // Ce champ est correctement déclaré
+    private final DemandeRepository demandeRepository;
 
     public PaiementService(PaiementRepository paiementRepository, DemandeRepository demandeRepository) {
         this.paiementRepository = paiementRepository;
-        this.demandeRepository = demandeRepository; // Et correctement assigné dans le constructeur
+        this.demandeRepository = demandeRepository;
     }
 
     public List<Paiement> getAllPaiements() {
         return paiementRepository.findAll();
     }
 
-    public Paiement getPaiementById(Long id) {
-        // Correction de l'ordre des arguments pour ResourceNotFoundException
-        return paiementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", id));
+    public Optional<Paiement> getPaiementById(Long id) {
+        return paiementRepository.findById(id);
     }
 
     public Paiement createPaiement(Paiement paiement) {
-        // Logique de traitement du paiement (intégration passerelle, etc.)
-        // Mise à jour du statut initial
-        paiement.setStatut(StatutDemande.StatutPaiement.EN_ATTENTE); // Ou directement VALIDE si traitement instantané
+        if (paiement.getDemande() == null || paiement.getDemande().getId() == null) {
+            throw new IllegalArgumentException("La demande associée au paiement est obligatoire.");
+        }
+        Demande existingDemande = demandeRepository.findById(paiement.getDemande().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Demande", "id", paiement.getDemande().getId()));
+        paiement.setDemande(existingDemande);
+
+        if (paiement.getStatut() == null) {
+            paiement.setStatut(StatutDemande.StatutPaiement.EN_ATTENTE);
+        }
+        if (paiement.getTransactionId() == null || paiement.getTransactionId().isEmpty()) {
+            paiement.setTransactionId(UUID.randomUUID().toString());
+        }
+
         Paiement savedPaiement = paiementRepository.save(paiement);
-
-        // Exemple: Si le paiement est réussi, mettre à jour le statut de la demande associée
-        // Décommentez et adaptez cette section si vous voulez utiliser demandeRepository ici
-        // if (savedPaiement.getStatut() == StatutPaiement.VALIDE) {
-        //     Demande demande = savedPaiement.getDemande();
-        //     // Assurez-vous que StatutDemande.PAYEE existe dans votre enum StatutDemande
-        //     // Ou utilisez un statut existant comme StatutDemande.TERMINEE si le paiement finalise la demande
-        //     // demande.setStatut(StatutDemande.TERMINEE);
-        //     // demandeRepository.save(demande);
-        // }
-
         return savedPaiement;
     }
 
     public Paiement updatePaiement(Long id, Paiement paiementDetails) {
-        Paiement paiement = getPaiementById(id);
+        Paiement paiement = paiementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", id));
 
-        // Mettre à jour les champs autorisés
-        paiement.setMontant(paiementDetails.getMontant());
-        paiement.setMethodePaiement(paiementDetails.getMethodePaiement());
-        paiement.setStatut(paiementDetails.getStatut()); // Attention: ne pas permettre n'importe quelle transition de statut ici
-        paiement.setTransactionId(paiementDetails.getTransactionId());
-        // La demande ne doit pas être modifiée ici
+        if (paiementDetails.getMontant() != null) {
+            paiement.setMontant(paiementDetails.getMontant());
+        }
+        if (paiementDetails.getMethodePaiement() != null) {
+            paiement.setMethodePaiement(paiementDetails.getMethodePaiement());
+        }
+        if (paiementDetails.getTransactionId() != null && !paiementDetails.getTransactionId().isEmpty()) {
+            paiement.setTransactionId(paiementDetails.getTransactionId());
+        }
+
+        if (paiementDetails.getStatut() != null && paiementDetails.getStatut() != paiement.getStatut()) {
+            if (paiement.getStatut() == StatutDemande.StatutPaiement.EN_ATTENTE &&
+                    (paiementDetails.getStatut() == StatutDemande.StatutPaiement.VALIDE ||
+                            paiementDetails.getStatut() == StatutDemande.StatutPaiement.ECHOUE)) {
+                paiement.setStatut(paiementDetails.getStatut());
+            } else if (paiement.getStatut() == StatutDemande.StatutPaiement.VALIDE &&
+                    paiementDetails.getStatut() == StatutDemande.StatutPaiement.REMBOURSE) {
+                paiement.setStatut(paiementDetails.getStatut());
+            } else {
+                throw new IllegalArgumentException("Transition de statut non valide de " +
+                        paiement.getStatut() + " vers " + paiementDetails.getStatut());
+            }
+        }
+
+        if (paiementDetails.getDemande() != null && paiementDetails.getDemande().getId() != null &&
+                !paiementDetails.getDemande().getId().equals(paiement.getDemande().getId())) {
+            throw new IllegalArgumentException("La demande associée à un paiement ne peut pas être modifiée.");
+        }
 
         return paiementRepository.save(paiement);
     }
 
     public void deletePaiement(Long id) {
-        Paiement paiement = getPaiementById(id);
+        Paiement paiement = paiementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", id));
         paiementRepository.delete(paiement);
     }
 
-    // Méthodes métier spécifiques (selon le diagramme)
+    public List<Paiement> getPaiementsByDemande(Demande demande) {
+        return paiementRepository.findByDemande(demande);
+    }
+
+    /**
+     * Récupère tous les paiements associés à une demande spécifique par son ID.
+     * Cette méthode a été ajoutée pour correspondre à l'appel dans le contrôleur.
+     * @param demandeId L'ID de la demande.
+     * @return Une liste de paiements associés à cette demande.
+     */
+    public List<Paiement> getPaiementsByDemandeId(Long demandeId) {
+        return paiementRepository.findByDemandeId(demandeId);
+    }
+
+    public List<Paiement> getPaiementsByStatut(StatutDemande.StatutPaiement statut) {
+        return paiementRepository.findByStatut(statut);
+    }
+
+    public List<Paiement> getPaiementsByMethodePaiement(MethodePaiement methodePaiement) {
+        return paiementRepository.findByMethodePaiement(methodePaiement);
+    }
+
+    public Optional<Paiement> getPaiementByTransactionId(String transactionId) {
+        return paiementRepository.findByTransactionId(transactionId);
+    }
+
     public Paiement traiterPaiement(Long paiementId) {
-        Paiement paiement = getPaiementById(paiementId);
-        // Logique de traitement (simulation d'une interaction avec une passerelle)
-        // Si le traitement réussit
-        paiement.setStatut(StatutDemande.StatutPaiement.VALIDE);
-        // Si échec
-        // paiement.setStatut(StatutPaiement.ECHOUE);
+        Paiement paiement = paiementRepository.findById(paiementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", paiementId));
+
+        if (paiement.getStatut() != StatutDemande.StatutPaiement.EN_ATTENTE) {
+            throw new IllegalArgumentException("Le paiement n'est pas en attente et ne peut pas être traité.");
+        }
+
+        boolean success = true;
+        if (success) {
+            paiement.setStatut(StatutDemande.StatutPaiement.VALIDE);
+        } else {
+            paiement.setStatut(StatutDemande.StatutPaiement.ECHOUE);
+        }
         return paiementRepository.save(paiement);
     }
 
     public Paiement annulerPaiement(Long paiementId) {
-        Paiement paiement = getPaiementById(paiementId);
-        // Logique d'annulation (peut impliquer un remboursement)
+        Paiement paiement = paiementRepository.findById(paiementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Paiement", "id", paiementId));
+
         if (paiement.getStatut() == StatutDemande.StatutPaiement.VALIDE) {
             paiement.setStatut(StatutDemande.StatutPaiement.REMBOURSE);
         } else if (paiement.getStatut() == StatutDemande.StatutPaiement.EN_ATTENTE) {
-            paiement.setStatut(StatutDemande.StatutPaiement.ECHOUE); // Ou annulé sans remboursement
+            paiement.setStatut(StatutDemande.StatutPaiement.ECHOUE);
+        } else if (paiement.getStatut() == StatutDemande.StatutPaiement.ECHOUE ||
+                paiement.getStatut() == StatutDemande.StatutPaiement.REMBOURSE) {
+            throw new IllegalArgumentException("Le paiement est déjà dans un statut final et ne peut pas être annulé/remboursé.");
+        } else {
+            throw new IllegalArgumentException("Statut de paiement actuel (" + paiement.getStatut() + ") ne permet pas l'annulation.");
         }
         return paiementRepository.save(paiement);
     }

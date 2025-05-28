@@ -71,7 +71,8 @@ public class TouristeController {
 
         Long demandeId = Long.parseLong(paiementDetails.get("demandeId").toString());
         Double montant = Double.parseDouble(paiementDetails.get("montant").toString());
-        Admin.MethodePaiement methode = Admin.MethodePaiement.valueOf(
+        // CORRIGÉ : Utilise la nouvelle énumération MethodePaiement
+        MethodePaiement methode = MethodePaiement.valueOf(
                 paiementDetails.get("methodePaiement").toString());
 
         Paiement paiement = touristeService.effectuerPaiement(touristeId, demandeId, montant, methode);
@@ -79,6 +80,7 @@ public class TouristeController {
     }
 
     // Pour évaluer un guide, également utiliser un DTO ou un Map
+    @PostMapping("/{touristeId}/evaluations") // Ajout de l'annotation @PostMapping manquante
     public ResponseEntity<Evaluation> evaluerGuide(
             @PathVariable Long touristeId,
             @RequestBody Map<String, Object> evaluationDetails) {
